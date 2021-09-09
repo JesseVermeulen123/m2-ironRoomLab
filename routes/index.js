@@ -3,37 +3,23 @@ const router = require('express').Router();
 const Room = require('./../models/Room.model');
 const Review = require('./../models/Review.model');
 
-/* GET home page */
-router.get('/', (req, res, next) => {
-	res.render('index');
-});
-
-router.get('/rooms', (req, res) => {
-	//Get rooms from DB
-	Room.find()
-		.populate('owner')
-		.then((rooms) => {
-			res.render('rooms/all-rooms', { rooms });
-		})
-		.catch((error) => {
-			console.log(error);
-		});
-});
-
 router.get('/rooms/:id', (req, res) => {
 	const { id } = req.params;
 	//const roomId = req.params.id
-
-  
-
 	Room.findById(req.params.id)
+
 		.populate('owner')
+		.populate('buyer')
+		
+	
+	
 		.populate({
 			path: 'reviews',
 			populate: {
 				path: 'user'
 			}
 		})
+	
 		.then((room) => {
 			res.render('rooms/one-room', { room });
 		})
@@ -68,6 +54,24 @@ router.post('/rooms/:id', (req, res) => {
 		.catch((error) => {
 			console.log(error);
 		});
+});
+
+router.get('/rooms', (req, res) => {
+	//Get rooms from DB
+	Room.find()
+		.populate('owner')
+		.then((rooms) => {
+			res.render('all-rooms', { rooms });
+		})
+		.catch((error) => {
+			console.log(error);
+		});
+});
+
+
+/* GET home page */
+router.get('/', (req, res, next) => {
+	res.render('index');
 });
 
 module.exports = router;
